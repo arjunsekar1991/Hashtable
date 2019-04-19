@@ -8,9 +8,9 @@ using namespace std;
 HashTable::HashTable()
 {
 	
-	for(int i = 0; i < MAXHASH; i++) 
+	for(int i = 0; i < MAXHASH-1; i++) 
 	{
-		probeSequenceArray[i] = i;
+		probeSequenceArray[i] = i+1;
 	}
 
 	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
@@ -46,10 +46,11 @@ bool HashTable::insert(int key, int value, int& collisions) {
 	if (numElts == 1000) { 
 		return false;
 	}
-	unsigned long home;
+	unsigned int home;
 	
 	home = hash(key)%MAXHASH;
-	unsigned long newHome=home;
+	//intially new home will be home later if a collision occurs new home = home + probe [number of collision] % maxhash
+	unsigned int newHome=home;
 	
 	while(true){
 		
@@ -76,4 +77,39 @@ bool HashTable::insert(int key, int value, int& collisions) {
 
 	}
 	return false;
+}
+
+
+bool HashTable::find(int key, int& value) {
+
+	unsigned int home;
+	home = hash(key)%MAXHASH;
+	unsigned int newHome = home;
+	int numberOfIteration = 0;
+	while (true) {
+		
+		if (hashTable[newHome].getKey() == key) { 
+			value = hashTable[newHome].getValue();
+			return true;
+		}
+		if (hashTable[newHome].isEmpty() || hashTable[newHome].isTombstone()) {
+			return false;
+		}
+		if (hashTable[newHome].isNormal()) {
+			if (numberOfIteration == 1000) 
+			{ 
+				return false;
+			}
+			newHome = (home + probeSequenceArray[numberOfIteration]) % MAXHASH; 
+			numberOfIteration++;
+		}
+	}
+	return false;
+}
+
+float HashTable::alpha() {
+	float alphavalue;
+	alphavalue  = (float)numElts / (float)MAXHASH;
+	return alphavalue;
+
 }
