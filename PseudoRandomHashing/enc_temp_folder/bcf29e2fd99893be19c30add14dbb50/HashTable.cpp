@@ -49,7 +49,6 @@ bool HashTable::insert(int key, int value, int& collisions) {
 	unsigned long home;
 	
 	home = hash(key)%MAXHASH;
-	//intially new home will be home later if a collision occurs new home = home + probe [number of collision] % maxhash
 	unsigned long newHome=home;
 	
 	while(true){

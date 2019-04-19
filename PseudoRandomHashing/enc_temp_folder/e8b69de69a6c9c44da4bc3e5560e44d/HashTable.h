@@ -16,8 +16,9 @@ private:
 
 	unsigned long probe(int, int);
 	unsigned int hash(const int);
-
+//	vector<Record> unsortedStudentRecord;
 	array<Slot, MAXHASH> hashTable;
 	int numElts;
+	int collisions;
 	array<int, MAXHASH> probeSequenceArray;
 };
