@@ -81,7 +81,7 @@ bool HashTable::insert(int key, int value, int& collisions) {
 
 
 bool HashTable::find(int key, int& value) {
-
+	numberOfSearchCollision = 0;
 	unsigned int home;
 	home = hash(key)%MAXHASH;
 	unsigned int newHome = home;
@@ -90,9 +90,10 @@ bool HashTable::find(int key, int& value) {
 		
 		if (hashTable[newHome].getKey() == key) { 
 			value = hashTable[newHome].getValue();
+			numberOfSearchCollision = numberOfIteration;
 			return true;
 		}
-		//ask professor whether tombstone need to be checked here
+		//should i check tombstone ?
 		if (hashTable[newHome].isEmpty() || hashTable[newHome].isTombstone()) {
 			return false;
 		}
@@ -113,4 +114,47 @@ float HashTable::alpha() {
 	alphavalue  = (float)numElts / (float)MAXHASH;
 	return alphavalue;
 
+}
+
+
+
+bool HashTable::remove(int key) {
+	
+	unsigned long homePosition, deleteLocation;
+	
+	int collisions = 0;
+	homePosition = hash(key) % MAXHASH;
+	deleteLocation = homePosition;
+	
+	 Slot currentRecord = hashTable.at(deleteLocation);
+	 
+	while (!(currentRecord.isEmpty() || collisions >= MAXHASH - 1)) {
+	
+		collisions++;
+		if (currentRecord.getKey() == key && currentRecord.isNormal()) {
+			numElts--;
+			hashTable.at(deleteLocation).kill();
+			return true;
+		}
+		
+		deleteLocation = (homePosition + probeSequenceArray[collisions]) % MAXHASH;
+		
+		currentRecord = hashTable.at(deleteLocation);
+	}
+	
+	return false;
+}
+
+int HashTable::getNumberOfSearchCollision() {
+	return numberOfSearchCollision;
+}
+
+
+ ostream& operator<<(ostream& os, const HashTable& hashTableObject) {
+	for (int i = 0; i < MAXHASH; i++) {
+		if (hashTableObject.hashTable[i].isNormal()) {
+			os <<"Slot in HashTable" << i <<" Key: " << hashTableObject.hashTable[i].getKey() << " Value:" << hashTableObject.hashTable[i].getValue() << endl;
+		}
+	}
+	return os;
 }
