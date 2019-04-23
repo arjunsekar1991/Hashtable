@@ -80,7 +80,7 @@ bool HashTable::insert(int key, int value, int& collisions) {
 	return false;
 }
 
-
+// Inputs are key and value if collision occurs pseudo random sequence will be referrerd to calculate new home
 bool HashTable::find(int key, int& value) {
 	numberOfSearchCollision = 0;
 	unsigned int home;
@@ -109,7 +109,7 @@ bool HashTable::find(int key, int& value) {
 	}
 	return false;
 }
-
+// This method calculates num of elts / max hash
 float HashTable::alpha() {
 	float alphavalue;
 	alphavalue  = (float)numElts / (float)MAXHASH;
@@ -117,7 +117,7 @@ float HashTable::alpha() {
 
 }
 
-
+// remove the element based on the key passed and marks the slot as tombstone
 
 bool HashTable::remove(int key) {
 	
@@ -185,7 +185,7 @@ vector<string> HashTable::stringSplit(const string &source,
 
 	 return results;
  }
-
+// This is an helper function that will fix the slot number for the item that is moved as a replacement for the deleted item
 bool HashTable::fixSlotAfterDelete(int key, int newIndexValue) {
 	int oldSlot;
 	find(key, oldSlot);
