@@ -173,7 +173,7 @@ cout << "hi";
 		}
 		
 		else if (userInput == "Q") {
-		cout << "Good Bye." << endl;
+		cout << "Exiting." << endl;
 		isQuitTriggered = true;
 		}
 
