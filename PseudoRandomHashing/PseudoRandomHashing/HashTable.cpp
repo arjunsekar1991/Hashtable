@@ -8,7 +8,7 @@ using namespace std;
 // constructor for hash table
 HashTable::HashTable()
 {
-	
+	//probe sequence intialized here
 	for(int i = 0; i < MAXHASH-1; i++) 
 	{
 		probeSequenceArray[i] = i+1;
@@ -16,7 +16,7 @@ HashTable::HashTable()
 
 	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 	numElts = 0;
-	
+	//probe sequence shuffled here
 	shuffle(probeSequenceArray.begin(), probeSequenceArray.end(), default_random_engine(seed));
 }
 
@@ -68,6 +68,9 @@ bool HashTable::insert(int key, int value, int& collisions) {
 					return false;
 				}
 				else { 
+					//below if will reset the collision when MaxHash -1 is reached
+					//added here safely to restrict array index out of bound exception
+					
 					if (collisions == MAXHASH - 1) {
 						collisions = 0;
 					}
@@ -91,7 +94,7 @@ bool HashTable::find(int key, int& value) {
 	unsigned int newHome = homePosition;
 	int numberOfIteration = 0;
 	while (true) {
-		
+		// key matched and not a tombstone return the value
 		if (hashTable[newHome].getKey() == key&& !(hashTable[newHome].isTombstone())) {
 			value = hashTable[newHome].getValue();
 			numberOfSearchCollision = numberOfIteration;
@@ -101,6 +104,7 @@ bool HashTable::find(int key, int& value) {
 		if (hashTable[newHome].isEmpty() ) {
 			return false;
 		}
+		// if hashtable slot is normal or tombstone then probe until a slot is found
 		if (hashTable[newHome].isNormal() || hashTable[newHome].isTombstone()) {
 			if (numberOfIteration == MAXHASH-1)
 			{ 
@@ -200,13 +204,14 @@ bool HashTable::fixSlotAfterDelete(int key, int newIndexValue) {
 	unsigned int newHome = homePosition;
 
 	while (true) {
-
+		// replace the slot with the correct slot of the last element in vector of student
 		if (hashTable[newHome].getKey() == key) {
 			hashTable[newHome] = Slot(key, newIndexValue);
 			return true;
 
 
 		}else{
+			//probing untill a slot is found
 			newHome = probe(homePosition, collisions);
 			collisions++;
 		
