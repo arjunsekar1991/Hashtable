@@ -15,7 +15,7 @@ public:
 	float alpha();
 	int getNumberOfSearchCollision();
 	//adding this from previous project for easily tokenizing first and last name
-	vector<string> stringSplit(const string & source, const char * delimiter, bool keepEmpty);
+	vector<string> stringSplit(const string& , const char* , bool );
 	//this will fix slot after fixing 
 	bool fixSlotAfterDelete(int, int);
 private:

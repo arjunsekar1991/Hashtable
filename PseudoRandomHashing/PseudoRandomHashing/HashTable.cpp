@@ -38,20 +38,21 @@ unsigned int HashTable::hash(const int key)
 
 //probe function that will calc new home based on numberof collisions
 unsigned long HashTable::probe(int homePosition, int collisions) {
-	unsigned long newHomePosition = (homePosition + probeSequenceArray[collisions]);
+	unsigned long newHomePosition = (homePosition + probeSequenceArray[collisions]) % MAXHASH;;
 	return newHomePosition;
 }
 
 //insert function with collision resolution
 bool HashTable::insert(int key, int value, int& collisions) {
-	if (numElts == 1000) { 
+	if (numElts == 1000 ) {
+		collisions = 0;
 		return false;
 	}
-	unsigned int home;
+	unsigned int homePosition;
 	
-	home = hash(key)%MAXHASH;
+	homePosition = hash(key)%MAXHASH;
 	//intially new home will be home later if a collision occurs new home = home + probe [number of collision] % maxhash
-	unsigned int newHome=home;
+	unsigned int newHome= homePosition;
 	
 	while(true){
 		//insert in empty or tombstone spot
@@ -67,8 +68,10 @@ bool HashTable::insert(int key, int value, int& collisions) {
 					return false;
 				}
 				else { 
-				
-				newHome = (home + probeSequenceArray[collisions]) % MAXHASH;
+					if (collisions == MAXHASH - 1) {
+						collisions = 0;
+					}
+					newHome = probe(homePosition, collisions);
 				collisions++;
 				}
 		
@@ -83,13 +86,13 @@ bool HashTable::insert(int key, int value, int& collisions) {
 // Inputs are key and value if collision occurs pseudo random sequence will be referrerd to calculate new home
 bool HashTable::find(int key, int& value) {
 	numberOfSearchCollision = 0;
-	unsigned int home;
-	home = hash(key)%MAXHASH;
-	unsigned int newHome = home;
+	unsigned int homePosition;
+	homePosition = hash(key)%MAXHASH;
+	unsigned int newHome = homePosition;
 	int numberOfIteration = 0;
 	while (true) {
 		
-		if (hashTable[newHome].getKey() == key) { 
+		if (hashTable[newHome].getKey() == key&& !(hashTable[newHome].isTombstone())) {
 			value = hashTable[newHome].getValue();
 			numberOfSearchCollision = numberOfIteration;
 			return true;
@@ -99,11 +102,11 @@ bool HashTable::find(int key, int& value) {
 			return false;
 		}
 		if (hashTable[newHome].isNormal() || hashTable[newHome].isTombstone()) {
-			if (numberOfIteration == 1000) 
+			if (numberOfIteration == MAXHASH-1)
 			{ 
-				return false;
+				numberOfIteration = 0;
 			}
-			newHome = (home + probeSequenceArray[numberOfIteration]) % MAXHASH; 
+			newHome = probe(homePosition, numberOfIteration);
 			numberOfIteration++;
 		}
 	}
@@ -138,7 +141,7 @@ bool HashTable::remove(int key) {
 			return true;
 		}
 		
-		deleteLocation = (homePosition + probeSequenceArray[collisions]) % MAXHASH;
+		deleteLocation = probe(homePosition, collisions);
 		collisions++;
 		currentRecord = hashTable.at(deleteLocation);
 	}
@@ -191,10 +194,10 @@ bool HashTable::fixSlotAfterDelete(int key, int newIndexValue) {
 	find(key, oldSlot);
 	int collisions=0;
 
-	unsigned long int home;
-	home = hash(key) % MAXHASH;
+	unsigned long int homePosition;
+	homePosition = hash(key) % MAXHASH;
 	//intially new home will be home later if a collision occurs new home = home + probe [number of collision] % maxhash
-	unsigned int newHome = home;
+	unsigned int newHome = homePosition;
 
 	while (true) {
 
@@ -204,7 +207,7 @@ bool HashTable::fixSlotAfterDelete(int key, int newIndexValue) {
 
 
 		}else{
-			newHome = (home + probeSequenceArray[collisions]) % MAXHASH;
+			newHome = probe(homePosition, collisions);
 			collisions++;
 		
 			}

@@ -51,7 +51,7 @@ cout << "hi";
 		cout << hashTable2.getNumberOfSearchCollision();
 		cout << "Alphavalue:" << hashTable2.alpha();;
 */
-	
+
 
 	
 	vector<Record> unsortedStudentRecord;
@@ -112,21 +112,36 @@ cout << "hi";
 			}
 			cout << "Searching... ";
 			if (hashTable.find(uid, returnedRecordIndexInVector)) {
-			
-			if (hashTable.remove(uid)) { 
+				//if the removed element is the last element in the hash table below code will fail
+				if (returnedRecordIndexInVector != unsortedStudentRecord.size()-1){
+					if (hashTable.remove(uid)) { 
 				
-				unsortedStudentRecord.erase(unsortedStudentRecord.begin() + returnedRecordIndexInVector);
-				int sizeOfVector = unsortedStudentRecord.size();
-				int lastElementIndex = sizeOfVector - 1;
-				Record lastRecordInStudentRecord = unsortedStudentRecord[lastElementIndex];
-				unsortedStudentRecord[returnedRecordIndexInVector] = lastRecordInStudentRecord;
-				hashTable.fixSlotAfterDelete(lastRecordInStudentRecord.getUID(), returnedRecordIndexInVector);
-				cout << "Record Found" << endl;
-				cout << "Record Deleted Successfully" << endl;
-			}
-			else { 
-				cout << "Record Not Found" << endl;
-			}
+					unsortedStudentRecord.erase(unsortedStudentRecord.begin() + returnedRecordIndexInVector);
+					int sizeOfVector = unsortedStudentRecord.size();
+					int lastElementIndex = sizeOfVector - 1;
+					Record lastRecordInStudentRecord = unsortedStudentRecord[lastElementIndex];
+					unsortedStudentRecord[returnedRecordIndexInVector] = lastRecordInStudentRecord;
+					hashTable.fixSlotAfterDelete(lastRecordInStudentRecord.getUID(), returnedRecordIndexInVector);
+					cout << "Record Found" << endl;
+					cout << "Record Deleted Successfully" << endl;
+					}
+				else 
+					{ 
+						cout << "Record Not Found" << endl;
+					}
+				}
+				else {
+					if (hashTable.remove(uid)) {
+
+						unsortedStudentRecord.erase(unsortedStudentRecord.begin() + returnedRecordIndexInVector);
+						cout << "Record Found" << endl;
+						cout << "Record Deleted Successfully" << endl;
+					}
+					else
+					{
+						cout << "Record Not Found" << endl;
+					}
+				}
 			}
 		}
 
